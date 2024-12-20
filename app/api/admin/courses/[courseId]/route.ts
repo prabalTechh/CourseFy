@@ -76,7 +76,7 @@ export const DELETE = async (
   req: NextRequest,
   { params }: { params: { courseId: string } }
 ) => {
-  const { courseId } = await params;  // Directly destructure from params
+  const { courseId } =  params;  // Directly destructure from params
 
   try {
     // Validate courseId
