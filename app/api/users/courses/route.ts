@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../admin/signup/route";
 const prisma = new PrismaClient();
 
 // export async function verifyToken(req: NextRequest) {

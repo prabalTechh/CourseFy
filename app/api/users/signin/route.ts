@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 const prisma = new PrismaClient();
 import bcrypt from "bcrypt";
-import { JWT_SECRET } from "../../admin/signup/route";
 
 export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest) {
         if (isPasswordValid) {
           const token = jwt.sign(
             { id: existingUser.id, username: existingUser.username },
-            JWT_SECRET,
+            process.env.JWT_SECRETS as string,
             { expiresIn: "1h" }
           );
 

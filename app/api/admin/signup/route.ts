@@ -4,12 +4,16 @@ import jwt from "jsonwebtoken";
 import { headers } from "next/headers";
 
 const prisma = new PrismaClient();
-export const JWT_SECRET = process.env.JWT_SECRET || "12343214"; // Fallback for development
+const JWT_SECRET = process.env.JWT_SECRETS as string ;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in the environment variables");
+}
 
 export async function POST(req: Request) {
   try {
     // Parse the request body
-    const { username, password,isAdmin } = await req.json();
+    const { username, password, isAdmin } = await req.json();
 
     // Validate input
     if (!username || !password) {
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
       data: {
         username,
         password: hashedPassword,
-        isAdmin
+        isAdmin,
       },
     });
 
@@ -51,7 +55,6 @@ export async function POST(req: Request) {
       JWT_SECRET,
       { expiresIn: '1h' }
     );
-    
 
     // Return success response
     return new Response(
@@ -63,7 +66,7 @@ export async function POST(req: Request) {
         status: 201,
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );

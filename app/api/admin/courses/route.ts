@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { JWT_SECRET } from "../signup/route";
 
 const prisma = new PrismaClient();
 
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // Decode the token and extract the userId
     const token = authorizationHeader;
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRETS as string) as JwtPayload;
     const userId = decoded.id;
 
     if (!userId) {
@@ -93,7 +92,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-const SECRET_KEY = JWT_SECRET;
+const SECRET_KEY = process.env.JWT_SECRETS;
 
 export async function GET(req: NextRequest) {
   try {
@@ -112,7 +111,7 @@ export async function GET(req: NextRequest) {
 
     // Verify the token
     try {
-      const decoded = jwt.verify(token, SECRET_KEY);
+      const decoded = jwt.verify(token, SECRET_KEY as string);
       console.log(decoded)
     } catch (error) {
       console.error("Token verification failed:", error);

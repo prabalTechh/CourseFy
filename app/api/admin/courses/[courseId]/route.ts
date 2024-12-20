@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../signup/route"; // Ensure this path is correct
 
 const prisma = new PrismaClient();
 
@@ -72,38 +71,35 @@ const prisma = new PrismaClient();
 // };
 
 // Admin-only DELETE route to delete a course
-export const DELETE = async (
+export async function DELETE(
   req: NextRequest,
-  { params }: { params: { courseId: string } }
-) => {
-  const { courseId } =  params;  // Directly destructure from params
+  { params } :any
+) {
+  const { courseId } = params; // Destructure courseId from params
 
   try {
     // Validate courseId
     if (!courseId) {
-      return NextResponse.json({ error: "Course ID is required" }, { status: 400 });
+      return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
     }
 
     const courseIdInt = parseInt(courseId, 10);
     if (isNaN(courseIdInt)) {
-      return NextResponse.json({ error: "Invalid Course ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid Course ID' }, { status: 400 });
     }
 
     // Get the token from the Authorization header
-    const authorizationHeader = req.headers.get("Authorization")?.split(" ")[1];
+    const authorizationHeader = req.headers.get('Authorization')?.split(' ')[1];
     if (!authorizationHeader) {
-      return NextResponse.json({ error: "Authorization token is missing" }, { status: 401 });
+      return NextResponse.json({ error: 'Authorization token is missing' }, { status: 401 });
     }
 
     // Verify the token
-    const decoded = jwt.verify(authorizationHeader, JWT_SECRET) as { id: number; isAdmin: boolean };
-
-    console.log("Decoded JWT:", decoded);
+    const decoded = jwt.verify(authorizationHeader, process.env.JWT_SECRETS as string) as { id: number; isAdmin: boolean };
 
     // Validate admin access
     if (!decoded.isAdmin) {
-      console.log("User is not an admin:", decoded);
-      return NextResponse.json({ error: "Only admins can delete courses" }, { status: 403 });
+      return NextResponse.json({ error: 'Only admins can delete courses' }, { status: 403 });
     }
 
     // Check if the course exists
@@ -112,7 +108,7 @@ export const DELETE = async (
     });
 
     if (!existingCourse) {
-      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Course not found' }, { status: 404 });
     }
 
     // Delete the course
@@ -120,12 +116,12 @@ export const DELETE = async (
       where: { courseId: courseIdInt },
     });
 
-    return NextResponse.json({ message: "Course deleted successfully" }, { status: 200 });
+    return NextResponse.json({ message: 'Course deleted successfully' }, { status: 200 });
   } catch (error: any) {
-    console.error("Error deleting course:", error.message);
+    console.error('Error deleting course:', error.message);
     return NextResponse.json(
-      { error: "Failed to delete the course", details: error.message },
+      { error: 'Failed to delete the course', details: error.message },
       { status: 500 }
     );
   }
-};
+}

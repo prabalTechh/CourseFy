@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma"; // Adjust the import path to your Prisma client
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../admin/signup/route";
 
 // This will be the handler for the POST request to purchase the course
 export async function POST(req: NextRequest) {
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
     // Decode the token to get user information
     let decoded;
     try {
-      decoded = jwt.verify(token, JWT_SECRET);
+      decoded = jwt.verify(token, process.env.JWT_SECRETS as string);
     } catch (error) {
       console.error("JWT Error:", error);
       return new NextResponse(JSON.stringify({ message: "Unauthorized" }), {
