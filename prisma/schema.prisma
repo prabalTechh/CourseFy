@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement()) // Primary key for User
+  username String   @unique                      // Unique username
+  password String
+  isAdmin   Boolean   @default(false)
+  courses  Course[] // One-to-many relationship with Course
+}
+
+model Course {
+  courseId    Int     @id @default(autoincrement()) // Primary key for Course
+  title       String
+  description String
+  price       Int
+  imageLink   String
+  published   Boolean
+  userId      Int     // Foreign key linking to User
+  user        User    @relation(fields: [userId], references: [id]) // Relationship definition
+}
